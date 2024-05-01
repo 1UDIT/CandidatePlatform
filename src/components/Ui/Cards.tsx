@@ -24,16 +24,23 @@ interface ApiData {
 
 
 const MAX_LINES = 1;
+const ITEMS_PER_PAGE = 5;
 
 export default function Cards() {
   const [expandedId, setExpandedId] = useState<string | null>();
   const [data, setData] = useState<ApiData[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
   const titleFilter = useSelector((state: RootState) => state.filterApi.titleFilter);
   const locationFilter = useSelector((state: RootState) => state.filterApi.locationFilter);
+  const locationExperience = useSelector((state: RootState) => state.filterApi.locationExperience);
+  const JobWork = useSelector((state: RootState) => state.filterApi.jobWork);
+  const [totalItems, setTotalItems] = useState(0);
 
   function apiCall() {
+    setLoading(true);
     var data = {
-      "limit": 4,
+      "limit": ITEMS_PER_PAGE,
       "ofset": 0
     }
     axios({
@@ -46,17 +53,35 @@ export default function Cards() {
         'Access-control-allow-origin': '*'
       },
     }).then(response => {
-      setData(response.data.jdList);
+      setLoading(false);
+      const newItems = response.data.jdList; 
+      if (newItems.length > 0) {
+        setData(prevData => [...prevData, ...newItems]);
+        setPage(prevPage => prevPage + 1);
+        setTotalItems(newItems.length);
+      }
     }).catch(error => {
       console.log("Error In Post Data", error);
     });
   }
 
-  console.log(data)
+  console.log(data.length , totalItems)
 
-  useEffect(() => {
-    apiCall();
-  }, []);
+  useEffect(() => { 
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && data.length === totalItems ) {
+        apiCall();
+      }
+    }, {
+      threshold: 1,
+    });
+
+    observer.observe(document.querySelector('.sentinel'));
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [page]); // Only re-run the effect if page changes
 
 
   const toggle = (id: string) => {
@@ -66,13 +91,15 @@ export default function Cards() {
   const filteredData = data.filter((value) => {
     const titleMatch = value.jobRole.toLowerCase().includes(titleFilter.toLowerCase());
     const locationMatch = value.location.toLowerCase().includes(locationFilter.toLowerCase());
-    return titleMatch && locationMatch;
+    const experienceMatch = !locationExperience || value.minExp == locationExperience;
+    const Working = value.location.toLowerCase().includes(JobWork.toLowerCase());
+    return titleMatch && locationMatch && experienceMatch && Working;
   });
 
   return (
     <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 px-4 py-4 gap-4'>
       {
-       filteredData.map((value) => {
+        filteredData.map((value) => {
           const contentLines = value.jobDetailsFromCompany.split('.');
           const displayedContent = expandedId === value.jdUid ? contentLines.join('\n') : contentLines.slice(0, MAX_LINES).join('\n');
           return (
@@ -122,15 +149,15 @@ export default function Cards() {
                   Minimum Experience
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  1 {value.minExp} years
+                  {value.minExp} years
                 </Typography>
                 <Box textAlign='center' my={1} >
-                  <Button variant='contained'>
-                    <BoltIcon className='text-emerald-400' /> Easy Apply
+                  <Button variant='contained' style={{ backgroundColor: "#55efc4", color: 'black' }}>
+                    <BoltIcon className='text-[#ff822d]' /> Easy Apply
                   </Button>
                 </Box>
                 <Box textAlign='center'>
-                  <Button variant='contained' >
+                  <Button variant='contained' style={{ backgroundColor: "#55efc4", color: 'black' }}>
                     Unlock referral asks
                   </Button>
                 </Box>
@@ -140,6 +167,9 @@ export default function Cards() {
           )
         })
       }
+
+      <div className="sentinel" style={{ height: '20px' }}></div>
+      {loading && <div>Loading...</div>}
     </div>
   );
 }
