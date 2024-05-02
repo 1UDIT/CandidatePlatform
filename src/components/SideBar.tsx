@@ -19,7 +19,7 @@ import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import Cards from './Ui/Cards';
-import Filter from './Ui/Filter';
+import Filter from './Ui/Filter'; 
 
 const drawerWidth = 240;
 
@@ -108,21 +108,19 @@ export default function SideBar() {
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
             <AppBar position="fixed" open={open}>
-                <Toolbar>
+                <Toolbar >
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
                         onClick={handleDrawerOpen}
                         edge="start"
-                        sx={{
-                            marginRight: 5,
-                            ...(open && { display: 'none' }),
-                        }}
+                        sx={{ display: { xs: 'none', sm: 'inline', md: 'inline' } }}
+                        
                     >
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap component="div">
-                        Mini variant drawer
+                        Admin
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -185,8 +183,8 @@ export default function SideBar() {
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
-                <Filter />
-                <Cards />
+                <Filter /> 
+                <Cards/>
             </Box>
         </Box>
     );
