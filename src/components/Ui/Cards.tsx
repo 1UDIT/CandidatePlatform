@@ -4,14 +4,12 @@ import CardContent from '@mui/material/CardContent';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { Box, Button } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../../Redux/Store';
-import { Link } from 'react-router-dom';
-import { TotalJob } from '../../Redux/FilterApi';
 
 
 interface ApiData {
@@ -24,6 +22,8 @@ interface ApiData {
   jdLink: string
   salaryCurrencyCode: string
 }
+
+
 
 const MAX_LINES = 1;
 const ITEMS_PER_PAGE = 15;
@@ -42,7 +42,7 @@ export default function Cards() {
   const dispatch = useDispatch();
 
 
-  function apiCall(ofset: number) {
+  function apiCall() {
     setLoading(true);
     var data = {
       "limit": ITEMS_PER_PAGE * page,
@@ -58,13 +58,12 @@ export default function Cards() {
         'Access-control-allow-origin': '*'
       },
     }).then(response => {
-
-      const newItems = response.data.jdList;
+      setLoading(false);
+      const newItems = response.data.jdList; 
       if (newItems.length > 0) {
         setData(response.data.jdList);
         setPage(prevPage => prevPage + 1);
-        setTotalItems(response.data.totalCount);
-        dispatch(TotalJob(response.data.totalCount));
+        setTotalItems(newItems.length);
       }
     }).catch(error => {
       console.log("Error In Post Data", error);
@@ -108,6 +107,8 @@ export default function Cards() {
     return titleMatch && locationMatch && experienceMatch && Working && CompanyName;
   });
 
+ 
+
   return (
     <>
       <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 px-4 py-4 gap-4'>
@@ -150,51 +151,43 @@ export default function Cards() {
                 />
                 <CardContent>
 
-                  <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom component={'div'}>
-                    Estimated salary:{value.maxJdSalary} {value.salaryCurrencyCode}
-                  </Typography>
-                  <Typography variant="body1" component={'span'}>
-                    {displayedContent}
-                    {contentLines.length > MAX_LINES && (
-                      <span onClick={() => { toggle(value.jdUid) }} style={{ cursor: 'pointer', color: 'blue' }}>
-                        {/* <span style={{ cursor: 'pointer', color: 'blue' }}> */}
-                        {expandedId === value.jdUid ? null : '... '}
-                        <Box textAlign='center'>{expandedId === value.jdUid ? "View Less" : "View More"}</Box>
-                        {/* <Box textAlign='center'> View More</Box> */}
-                      </span>
-                    )}
-                  </Typography>
-                  <Typography sx={{ fontSize: 14 }} component={'span'} className='mt-6'>
-                    Minimum Experience:{value.minExp === null ? "1" : value.minExp} years
-                  </Typography>
-                  <Box textAlign='center' my={1} >
-                    <Link to={value.jdLink}>
-                      <Button variant='contained' style={{ backgroundColor: "#55efc4", color: 'black' }}>
-                        <BoltIcon className='text-[#ff822d]' /> Easy Apply
-                      </Button>
-                    </Link>
-                  </Box>
-                  <Box textAlign='center'>
-                    <Button variant='contained' style={{ backgroundColor: "#55efc4", color: 'black' }}>
-                      Unlock referral asks
-                    </Button>
-                  </Box>
-                </CardContent>
-              </Card>
+                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom component={'span'}>
+                  Estimated salary:{value.maxJdSalary}
+                </Typography>
+                <Typography variant="body1" component={'span'}>
+                  {displayedContent}
+                  {contentLines.length > MAX_LINES && (
+                    <span onClick={() => { toggle(value.jdUid) }} style={{ cursor: 'pointer', color: 'blue' }}>
+                      {expandedId === value.jdUid ? null : '... '}
+                      <Box textAlign='center'>{expandedId === value.jdUid ? "View Less" : "View More"}</Box>
+                    </span>
+                  )}
+                </Typography>
+                <Typography sx={{ fontSize: 14 }} component={'span'} className='mt-6'>
+                  Minimum Experience
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {value.minExp} years
+                </Typography>
+                <Box textAlign='center' my={1} >
+                  <Button variant='contained' style={{ backgroundColor: "#55efc4", color: 'black' }}>
+                    <BoltIcon className='text-[#ff822d]' /> Easy Apply
+                  </Button>
+                </Box>
+                <Box textAlign='center'>
+                  <Button variant='contained' style={{ backgroundColor: "#55efc4", color: 'black' }}>
+                    Unlock referral asks
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
 
             )
           })
         }
       </div>
       <div className="sentinel" style={{ height: '20px' }}></div>
-      <div>
-        {loading &&
-          <svg className="ml-auto mr-auto block animate-spin h-8 w-12 mr-3" viewBox="0 0 24 24">
-            <circle className="opacity-25 text-orange-950" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75 text-red-500" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-        }
-      </div>
-    </>
+      {loading && <div>Loading...</div>}
+    </div>
   );
 }

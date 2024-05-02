@@ -6,17 +6,13 @@ export interface FilterState {
     locationFilter: string
     locationExperience: null
     jobWork:string
-    Cname:string
-    totalJob:string
 }
 
 const initialState: FilterState = {
     titleFilter: "",
     locationFilter: "",
     locationExperience: null,
-    jobWork: "",
-    Cname:"",
-    totalJob:""
+    jobWork: ""
 }
 
 const filterApiSlice = createSlice({
@@ -47,7 +43,11 @@ const filterApiSlice = createSlice({
             state.totalJob = action.payload;
             // console.log(action.payload, "action.payload", state.locationFilter)
         },
+        CompanyName: (state, action) => {
+            state.Cname = action.payload;
+            console.log(action.payload, "action.payload", state.locationFilter)
+        },
     }
 });
-export const { jobTitle, jobLocation, jobExperience, jobWork, CompanyName, TotalJob } = filterApiSlice.actions;
+export const { jobTitle, jobLocation, jobExperience, jobWork } = filterApiSlice.actions;
 export default filterApiSlice.reducer;

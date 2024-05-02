@@ -60,6 +60,9 @@ export default function Filter() {
                 <TextField fullWidth id="outlined-basic" label="Company Name" variant="outlined" onChange={(e) => filterName(e)} value={ComName} />
             </div>
             <div className="cols-1">
+                <TextField fullWidth  id="outlined-basic" label="Company Name" variant="outlined" onChange={(e) => filterName(e)} value={ComName} />
+            </div>
+            <div className="cols-1">
                 <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">Experience</InputLabel>
                     <Select
