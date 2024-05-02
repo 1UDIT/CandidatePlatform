@@ -9,7 +9,8 @@ import axios from 'axios';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { Box, Button, styled } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../Redux/Store'; 
+import { RootState } from '../../Redux/Store';
+import { Link } from 'react-router-dom';
 
 
 interface ApiData {
@@ -24,7 +25,7 @@ interface ApiData {
 }
  
 const MAX_LINES = 1;
-const ITEMS_PER_PAGE = 7;
+const ITEMS_PER_PAGE = 15;
 
 export default function Cards() {
   const [expandedId, setExpandedId] = useState<string | null>();
@@ -87,7 +88,7 @@ export default function Cards() {
     return () => {
       observer.disconnect();
     };
-  }, [page, data]);// Only re-run the effect if page changes
+  }, [page]);// Only re-run the effect if page changes
 
 
 
@@ -98,7 +99,7 @@ export default function Cards() {
   const filteredData = data.filter((value) => {
     const titleMatch = value.jobRole.toLowerCase().includes(titleFilter.toLowerCase());
     const locationMatch = value.location.toLowerCase().includes(locationFilter.toLowerCase());
-    const CompanyName = value.location.toLowerCase().includes(CName.toLowerCase());
+    const CompanyName = value.location.toLowerCase().includes(CName.toLowerCase()); // change value.location
     const experienceMatch = !locationExperience || value.minExp == locationExperience;
     const Working = value.location.toLowerCase().includes(JobWork.toLowerCase());
     return titleMatch && locationMatch && experienceMatch && Working && CompanyName;
@@ -166,10 +167,11 @@ export default function Cards() {
                     Minimum Experience:{value.minExp} years
                   </Typography>
                   <Box textAlign='center' my={1} >
-                   
+                    <Link to={value.jdLink}>
                       <Button variant='contained' style={{ backgroundColor: "#55efc4", color: 'black' }}>
                         <BoltIcon className='text-[#ff822d]' /> Easy Apply
-                      </Button> 
+                      </Button>
+                    </Link>
                   </Box>
                   <Box textAlign='center'>
                     <Button variant='contained' style={{ backgroundColor: "#55efc4", color: 'black' }}>

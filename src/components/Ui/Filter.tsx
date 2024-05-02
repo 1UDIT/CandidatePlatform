@@ -49,7 +49,7 @@ export default function Filter() {
         dispatch(jobLocation(e.currentTarget.value))
     }
     return (
-        <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-6 px-4 py-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-6 px-6 py-3 gap-4">
             <div className="cols-1">
                 <TextField fullWidth  id="outlined-basic" label="Location" variant="outlined" onChange={(e) => filterLocation(e)} value={locationFilter} />
             </div>
