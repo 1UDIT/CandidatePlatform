@@ -1,7 +1,7 @@
 import { IconButton, TextField } from "@mui/material";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { jobExperience, jobLocation, jobTitle, jobWork } from "../../Redux/FilterApi";
+import { CompanyName, jobExperience, jobLocation, jobTitle, jobWork } from "../../Redux/FilterApi";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -13,6 +13,7 @@ export default function Filter() {
     const [locationFilter, setLocationFilter] = useState<string>("");
     const [Experience, setExperience] = useState<string>("");
     const [Work, setWork] = useState<string>("");
+    const [ComName, setCname] = useState<string>("");
     const dispatch = useDispatch();
 
     const handleChange = (event: SelectChangeEvent) => {
@@ -39,17 +40,24 @@ export default function Filter() {
         setJobFilter(e.currentTarget.value);
         dispatch(jobTitle(e.currentTarget.value))
     }
+    const filterName = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setCname(e.currentTarget.value);
+        dispatch(CompanyName(e.currentTarget.value))
+    }
     const filterLocation = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setLocationFilter(e.currentTarget.value);
         dispatch(jobLocation(e.currentTarget.value))
     }
     return (
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 px-4 py-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-6 px-6 py-3 gap-4">
             <div className="cols-1">
-                <TextField fullWidth  id="outlined-basic" label="Location" variant="outlined" onChange={(e) => filterLocation(e)} value={locationFilter} />
+                <TextField fullWidth id="outlined-basic" label="Location" variant="outlined" onChange={(e) => filterLocation(e)} value={locationFilter} />
             </div>
             <div className="cols-1">
-                <TextField fullWidth  id="outlined-basic" label="Job Title" variant="outlined" onChange={(e) => filterJOBS(e)} value={jobFilter} />
+                <TextField fullWidth id="outlined-basic" label="Job Title" variant="outlined" onChange={(e) => filterJOBS(e)} value={jobFilter} />
+            </div>
+            <div className="cols-1">
+                <TextField fullWidth id="outlined-basic" label="Company Name" variant="outlined" onChange={(e) => filterName(e)} value={ComName} />
             </div>
             <div className="cols-1">
                 <FormControl fullWidth>
@@ -68,12 +76,9 @@ export default function Filter() {
                             )
                         }
                     >
-                        <MenuItem value={1}>1</MenuItem>
-                        <MenuItem value={2}>2</MenuItem>
-                        <MenuItem value={3}>3</MenuItem>
-                        <MenuItem value={4}>4</MenuItem>
-                        <MenuItem value={5}>5</MenuItem>
-                        <MenuItem value={6}>6</MenuItem>
+                        {[...Array(10)].map((_, index) => (
+                            <MenuItem key={index + 1} value={index + 1}>{index + 1}</MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
             </div>
@@ -96,7 +101,7 @@ export default function Filter() {
                     >
                         <MenuItem value={"Remote"}>Remote</MenuItem>
                         <MenuItem value={"Hybrid"}>Hybrid</MenuItem>
-                        <MenuItem value={"In-Office"}>In-Office</MenuItem> 
+                        <MenuItem value={"In-Office"}>In-Office</MenuItem>
                     </Select>
                 </FormControl>
             </div>
