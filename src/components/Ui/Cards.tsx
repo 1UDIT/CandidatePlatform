@@ -20,6 +20,7 @@ interface ApiData {
   jdUid: string
   jobRole: string
   maxJdSalary: string | null
+  minJdSalary: string | null
   minExp: string | null
   location: string
   jdLink: string
@@ -39,6 +40,7 @@ export default function Cards() {
   const locationExperience = useSelector((state: RootState) => state.filterApi.locationExperience);
   const JobWork = useSelector((state: RootState) => state.filterApi.jobWork);
   const CName = useSelector((state: RootState) => state.filterApi.Cname);
+  const jobSalary = useSelector((state: RootState) => state.filterApi.salary);
   const [totalItems, setTotalItems] = useState(0);
   const dispatch = useDispatch();
 
@@ -64,7 +66,7 @@ export default function Cards() {
       if (newItems.length > 0) {
         setData(prevData => {
           const newData = [...prevData];
-          newItems.forEach((item:any) => {
+          newItems.forEach((item: any) => {
             if (!newData.find(existingItem => existingItem.jdUid === item.jdUid)) {
               newData.push(item);
             }
@@ -97,7 +99,8 @@ export default function Cards() {
     const CompanyName = value.location.toLowerCase().includes(CName.toLowerCase()); // change value.location
     const experienceMatch = !locationExperience || value.minExp == locationExperience;
     const Working = value.location.toLowerCase().includes(JobWork.toLowerCase());
-    return titleMatch && locationMatch && experienceMatch && Working && CompanyName;
+    const salary = !jobSalary || value.minJdSalary! <= jobSalary;
+    return titleMatch && locationMatch && experienceMatch && Working && CompanyName && salary;
   });
 
   // if (loading === true) {
@@ -155,7 +158,7 @@ export default function Cards() {
                 <CardContent>
 
                   <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom component={'div'}>
-                    Estimated salary:{value.maxJdSalary} {value.salaryCurrencyCode}
+                    Estimated salary:{value.minJdSalary} to {value.maxJdSalary} {value.salaryCurrencyCode}
                   </Typography>
                   <Typography variant="body1" component={'span'}>
                     {displayedContent}
@@ -179,9 +182,11 @@ export default function Cards() {
                     </Link>
                   </Box>
                   <Box textAlign='center'>
-                    <Button variant='contained' style={{ backgroundColor: "#55efc4", color: 'black' }}>
-                      Unlock referral asks
-                    </Button>
+                    <Link to={value.jdLink}>
+                      <Button variant='contained' style={{ backgroundColor: "#55efc4", color: 'black' }}>
+                        Unlock referral asks
+                      </Button>
+                    </Link>
                   </Box>
                 </CardContent>
               </Card>

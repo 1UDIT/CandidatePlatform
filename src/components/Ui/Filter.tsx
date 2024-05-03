@@ -1,7 +1,7 @@
 import { IconButton, TextField } from "@mui/material";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { CompanyName, jobExperience, jobLocation, jobTitle, jobWork } from "../../Redux/FilterApi";
+import { CompanyName, jobExperience, jobLocation, jobSalary, jobTitle, jobWork } from "../../Redux/FilterApi";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -14,11 +14,16 @@ export default function Filter() {
     const [Experience, setExperience] = useState<string>("");
     const [Work, setWork] = useState<string>("");
     const [ComName, setCname] = useState<string>("");
+    const [minjobSalary, setSalary] = useState<string>("");
     const dispatch = useDispatch();
 
     const handleChange = (event: SelectChangeEvent) => {
         setExperience(event.target.value);
         dispatch(jobExperience(event.target.value));
+    };
+    const handlesalary = (event: SelectChangeEvent) => {
+        setSalary(event.target.value);
+        dispatch(jobSalary(event.target.value));
     };
     const handleWork = (event: SelectChangeEvent) => {
         setWork(event.target.value);
@@ -29,8 +34,7 @@ export default function Filter() {
         dispatch(jobWork(""));
     };
 
-    const handleClear = () => {
-        console.log("s");
+    const handleClear = () => { 
         setExperience("");
         dispatch(jobExperience(""));
     };
@@ -58,10 +62,7 @@ export default function Filter() {
             </div>
             <div className="cols-1">
                 <TextField fullWidth id="outlined-basic" label="Company Name" variant="outlined" onChange={(e) => filterName(e)} value={ComName} />
-            </div>
-            <div className="cols-1">
-                <TextField fullWidth  id="outlined-basic" label="Company Name" variant="outlined" onChange={(e) => filterName(e)} value={ComName} />
-            </div>
+            </div> 
             <div className="cols-1">
                 <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">Experience</InputLabel>
@@ -81,6 +82,29 @@ export default function Filter() {
                     >
                         {[...Array(10)].map((_, index) => (
                             <MenuItem key={index + 1} value={index + 1}>{index + 1}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            </div>
+            <div className="cols-1">
+                <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Min-Salary</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={minjobSalary}
+                        label="MinSalary"
+                        onChange={handlesalary}
+                        endAdornment={
+                            Experience && (
+                                <IconButton onClick={(e)=>dispatch(jobSalary(e.currentTarget.value))} edge="start">
+                                    <ClearIcon />
+                                </IconButton>
+                            )
+                        }
+                    >
+                        {[...Array(10)].map((_, index) => (
+                            <MenuItem key={index + 1} value={(index + 1)*5}>{(index + 1)*5}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
