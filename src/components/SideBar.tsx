@@ -15,8 +15,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';  
-import Filter from './Ui/Filter'; 
+import ListItemText from '@mui/material/ListItemText';
+import Filter from './Ui/Filter';
 import NavigationRoute from './Navigation';
 import RouteNavigation from './RouteNavigation';
 import { ContactPage, Home, Settings, StarRate } from '@mui/icons-material';
@@ -107,15 +107,15 @@ export default function SideBar() {
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
-            <AppBar position="fixed" open={open}>
-                <Toolbar >
+            <AppBar position="fixed" open={open} sx={{ bgcolor: "white", color: "black" }}>
+                <Toolbar>
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
                         onClick={handleDrawerOpen}
                         edge="start"
                         sx={{ display: { xs: 'none', sm: 'inline', md: 'inline' } }}
-                        
+
                     >
                         <MenuIcon />
                     </IconButton>
@@ -148,23 +148,23 @@ export default function SideBar() {
                                         justifyContent: 'center',
                                     }}
                                 >
-                                    {text   === "Home" ? <Home /> : null}
-                                    {text   === "Setting" ? <Settings /> : null}
-                                    {text   === "Contact-Us" ? <ContactPage /> : null}
-                                    {text   === "Starred" ? <StarRate /> : null}
+                                    {text === "Home" ? <Home /> : null}
+                                    {text === "Setting" ? <Settings /> : null}
+                                    {text === "Contact-Us" ? <ContactPage /> : null}
+                                    {text === "Starred" ? <StarRate /> : null}
                                 </ListItemIcon>
                                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
                             </ListItemButton>
                         </ListItem>
                     ))}
                 </List>
-                <Divider /> 
+                <Divider />
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
-                <Filter /> 
+                <Filter />
                 <NavigationRoute />
-                <RouteNavigation/>
+                <RouteNavigation />
             </Box>
         </Box>
     );

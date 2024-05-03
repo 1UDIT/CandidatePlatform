@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../Redux/Store';
 import { Link } from 'react-router-dom';
 import { TotalJob } from '../../Redux/FilterApi';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 
 interface ApiData {
@@ -26,7 +27,7 @@ interface ApiData {
 }
 
 const MAX_LINES = 1;
-const ITEMS_PER_PAGE = 15;
+const ITEMS_PER_PAGE = 10;
 
 export default function Cards() {
   const [expandedId, setExpandedId] = useState<string | null>();
@@ -39,13 +40,13 @@ export default function Cards() {
   const JobWork = useSelector((state: RootState) => state.filterApi.jobWork);
   const CName = useSelector((state: RootState) => state.filterApi.Cname);
   const [totalItems, setTotalItems] = useState(0);
-  const dispatch =useDispatch();
+  const dispatch = useDispatch();
 
 
   function apiCall(ofset: number) {
     setLoading(true);
     var data = {
-      "limit": ITEMS_PER_PAGE * page,
+      "limit": ITEMS_PER_PAGE * ofset,
       "ofset": ofset
     }
     axios({
@@ -58,11 +59,19 @@ export default function Cards() {
         'Access-control-allow-origin': '*'
       },
     }).then(response => {
-
+      setLoading(false);
       const newItems = response.data.jdList;
       if (newItems.length > 0) {
-        setData(response.data.jdList);
-        setPage(prevPage => prevPage + 1);
+        setData(prevData => {
+          const newData = [...prevData];
+          newItems.forEach((item:any) => {
+            if (!newData.find(existingItem => existingItem.jdUid === item.jdUid)) {
+              newData.push(item);
+            }
+          });
+          return newData;
+        });
+        // setData(response.data.jdList);
         setTotalItems(response.data.totalCount);
         dispatch(TotalJob(response.data.totalCount))
       }
@@ -72,25 +81,8 @@ export default function Cards() {
   }
 
 
-
   useEffect(() => {
-    apiCall(0);
-  }, []);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && data.length < totalItems) {
-        apiCall(page); // Call with the current data length as offset
-      }
-    }, {
-      threshold: 1,
-    });
-
-    observer.observe(document.querySelector('.sentinel') as HTMLInputElement)!;
-
-    return () => {
-      observer.disconnect();
-    };
+    apiCall(page); // Call with the current data length as offset
   }, [page]);// Only re-run the effect if page changes
 
 
@@ -107,6 +99,18 @@ export default function Cards() {
     const Working = value.location.toLowerCase().includes(JobWork.toLowerCase());
     return titleMatch && locationMatch && experienceMatch && Working && CompanyName;
   });
+
+  // if (loading === true) {
+  //   return (
+  //     <div className='pt-4'>
+  //       {loading &&
+  //         <svg className="ml-auto mr-auto block animate-spin h-8 w-12 mr-3" viewBox="0 0 24 24">
+  //           <circle className="opacity-25 text-orange-950" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+  //           <path className="opacity-75 text-red-500" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+  //         </svg>}
+  //     </div>
+  //   )
+  // }
 
   return (
     <>
@@ -187,13 +191,20 @@ export default function Cards() {
         }
       </div>
       <div className="sentinel" style={{ height: '20px' }}></div>
-      <div>
+      <div className="flex justify-center space-x-4 text-lg">
+
+        <Button variant='contained' style={{ backgroundColor: "#55efc4", color: 'black' }} onClick={() => { setPage(page + 1); }}>
+          <RefreshIcon />Load More Data
+        </Button>
+
+      </div>
+      {/* <div>
         {loading &&
           <svg className="ml-auto mr-auto block animate-spin h-8 w-12 mr-3" viewBox="0 0 24 24">
             <circle className="opacity-25 text-orange-950" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75 text-red-500" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>}
-      </div>
+      </div> */}
     </>
   );
 }
